@@ -10,7 +10,7 @@ app.use(express.json());
 app.use('/admin',adminRoutes);
 
 
-mongoose.connect("mongodb+srv://fshakeel9233:MrMSvv9kCv2wyO9H@cluster0.zuaiorv.mongodb.net/CourseApp", {
+mongoose.connect("your mongo connection string", {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }).then(() => {
