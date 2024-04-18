@@ -1,18 +1,16 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Base_URL } from '../config';
-import { userContext } from '../Context/UserContext';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { courseState } from '../Store/Atoms/course';
+import { courseDetails } from '../Store/Selectors/course';
 
 const Courses = () => {
-    const { setUsername } = useContext(userContext);
-    const [courses, setCourses] = useState([]);
+    const setCourses = useSetRecoilState(courseState);
+    const courses = useRecoilValue(courseDetails);
     
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            setUsername(null); 
-            return;
-        }
         
         const fetchData = async () => {
             try {
@@ -22,7 +20,9 @@ const Courses = () => {
                     }
                 });
                 if (res.data.courses) {
-                    setCourses(res.data.courses)
+                    setCourses({
+                        course: res.data.courses
+                    })
                 }
             } catch (error) {
                 console.log(error);

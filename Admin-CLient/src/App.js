@@ -7,41 +7,18 @@ import Navbar from './Components/Navbar';
 import { Base_URL } from './config';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { userContext } from './Context/UserContext';
 import AddCourses from './Components/AddCourses';
 import Courses from './Components/Courses';
+import {
+  RecoilRoot,
+  useSetRecoilState
+} from 'recoil';
+import { userState } from './Store/Atoms/user';
 function App() {
-  const [username,setUsername] = useState("");
-  useEffect(() => {
-    const init = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setUsername(null); 
-                return;
-            }
-
-            const res = await axios.get(`${Base_URL}/admin/me`, {
-                headers: {
-                    "Auth": token
-                }
-            });
-            
-            if (res.data.username) {
-                setUsername(res.data.username);
-            }
-        } catch (error) {
-            console.error('Error fetching user information:', error);
-            setUsername(null); 
-        }
-    };
-    init();
-}, []);
-console.log(username);
-
   return (
-    <userContext.Provider value={{username,setUsername}}>
+    <RecoilRoot>
     <Router>
+      <InitUser/>
       <Navbar/>
       <Routes>
         <Route path={'/'} element = {<Landing />} />
@@ -51,8 +28,46 @@ console.log(username);
         <Route path={'/courses'} element = {<Courses/>} />
       </Routes>
     </Router>
-    </userContext.Provider>
+    </RecoilRoot>
+    
   );
+}
+
+function InitUser() {
+  const setUser = useSetRecoilState(userState);
+  const init = async() => {
+      try {
+          const response = await axios.get(`${Base_URL}/admin/me`, {
+              headers: {
+                  "auth":localStorage.getItem("token")
+              }
+          })
+
+          if (response.data.username) {
+              setUser({
+                  isLoading: false,
+                  userEmail: response.data.username
+              })
+          } else {
+              setUser({
+                  isLoading: false,
+                  userEmail: null
+              })
+          }
+      } catch (e) {
+
+          setUser({
+              isLoading: false,
+              userEmail: null
+          })
+      }
+  };
+
+  useEffect(() => {
+      init();
+  }, []);
+
+  return <></>
 }
 
 export default App;

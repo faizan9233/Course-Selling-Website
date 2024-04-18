@@ -1,15 +1,16 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import {Base_URL} from '../config'
-import { userContext } from '../Context/UserContext';
+import { useSetRecoilState } from 'recoil';
+import { userState } from '../Store/Atoms/user';
 const Signup = () => {
-    const {setUsername} = useContext(userContext);
-    const [username,setUser] = useState("");
+    const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
     const navigate = useNavigate();
+    const setU = useSetRecoilState(userState);
     const toastOptions = {
         position: "top-right",
         autoClose: 3000,
@@ -28,7 +29,10 @@ const Signup = () => {
                 localStorage.setItem("token", token);
                 toast.success('Signed up Successfully', toastOptions);
                 navigate('/login');
-                setUsername(username);
+                setU({
+                    isLoading:false,
+                    userEmail: username
+                });
             }
         } catch (error) {
             if (error) {
@@ -45,7 +49,7 @@ const Signup = () => {
       <div className='w-full flex flex-col gap-3'>
         <input type="text" placeholder='Enter username' className='p-3 rounded-lg outline-none text-black w-full'
         onChange={(e)=>{
-            setUser(e.target.value);
+            setUsername(e.target.value);
         }} />
         <input type="password" placeholder='Enter Password' className='p-3 rounded-lg outline-none text-black w-full'
         onClick={(e)=>{

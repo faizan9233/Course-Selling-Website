@@ -1,19 +1,22 @@
-
-import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
-import { userContext } from '../Context/UserContext';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { userEmailState } from '../Store/Selectors/UserEmail';
+import { userState } from '../Store/Atoms/user';
 
 const Navbar = () => {
-    const {username,setUsername} = useContext(userContext);
-    const navigate = useNavigate();
+    const userEmail = useRecoilValue(userEmailState);
+    const setUser = useSetRecoilState(userState);
     const Handlelogout =  ()=>{
         localStorage.removeItem("token");
-        setUsername(null);
+        setUser({
+            isLoading: true,
+            userEmail: null
+        })
         // navigate('/');
 
     }
     
-       if(username){
+       if(userEmail){
           return  <div className='flex justify-between items-center bg-[#FAFAFA] h-[60px] shadow-lg'>
             <Link to={'/'}>
             <div className='ml-2 text-lg'>

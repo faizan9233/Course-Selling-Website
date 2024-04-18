@@ -5,12 +5,13 @@ import {Base_URL} from '../config'
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { userContext } from '../Context/UserContext';
+import { useSetRecoilState } from 'recoil';
+import { userState } from '../Store/Atoms/user';
 const Login = () => {
-    const {setUsername} = useContext(userContext);
-    const [username,setUser] = useState("");
+    const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
     const navigate = useNavigate();
+    const setU = useSetRecoilState(userState);
     const toastOptions = {
         position: "top-right",
         autoClose: 5000,
@@ -29,7 +30,10 @@ const Login = () => {
                 localStorage.setItem("token", token);
                 toast.success('Signed in Successfully', toastOptions);
                 navigate('/');
-                setUsername(username);
+                setU({
+                  isLoading: false,
+                  userEmail:username
+                });
             }
         } catch (error) {
             if (error) {
@@ -47,7 +51,7 @@ const Login = () => {
         <div className='w-full flex flex-col gap-3'>
           <input type="text" placeholder='Enter username' className='p-3 rounded-lg outline-none text-black w-full'
           onChange={(e)=>{
-            setUser(e.target.value);
+            setUsername(e.target.value);
           }} />
           <input type="password" placeholder='Enter Password' className='p-3 rounded-lg outline-none text-black w-full'
           onChange={(e)=>{
