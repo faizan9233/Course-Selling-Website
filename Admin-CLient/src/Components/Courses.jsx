@@ -50,4 +50,10 @@ const Courses = () => {
     );
 }
 
+const EditCourse = ()=>{
+    return <div>
+        
+    </div>
+}
+
 export default Courses;
